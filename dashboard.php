@@ -7,58 +7,33 @@ if (!isset($_SESSION['logged_in']) || !$_SESSION['logged_in']) {
     exit();
 }
 
-$predefined_items = [
-    ["img/item1.png", "Cogumelo", "Recupera 30% do nível de fome e dá efeito de náusea."],
-    ["img/item2.png", "Disco de ouro", "Use para trocas entre cidadãos comerciantes."],
-    ["img/item3.png", "Maçã", "Recupera 40% do nível de fome."],
-    ["img/item4.png", "Escudo de ferro", "Quando ativado, protege contra danos de explosões e flechas."],
-    ["img/item5.png", "Espada de ferro", "+7 de Dano de Ataque"],
-    ["img/item6.png", "Lasca de Diamante", "Use para trocas entre cidadãos celestes."],
-    ["img/item7.png", "Trevo de 4 folhas", "Quando usado, protege contra qualquer dano (você só pode usar uma vez)."],
-    ["img/item8.png", "Poção de visão noturna", "Permite que você enxergue melhor no escuro"],
-    ["img/item9.png.jpg", "Osso", "Use para domesticar lobos."],
-    ["img/item10.jpg", "Flecha encantada", "Quando atirada, causa efeito de poções."],
-    ["img/item11.jpg", "Tronco de árvore", "Transforme-o em tábuas para utilizá-lo."],
-    ["img/item12.jpg", "Vela de invocação", "Use para spawnar mobs."],
-    ["img/item13.jpg", "Folha de Árvore", "Use para fazer poções."],
-    ["img/item14.jpg", "Poção de regeneração", "Use para regenerar a sua vida."],
-    ["img/item15.jpg", "Pena", "Use para escrever em livros ou papéis"],
-    ["img/item16.jpg", "Armadura de ouro", "Protege contra +7 dano"],
-    ["img/item17.jpg", "Livro de escrita", "Use para escrever"],
-    ["img/item18.jpg", "Moeda de esmeralda", "Use para trocar com aldeões comerciantes"],
-    ["img/item19.jpg", "Arco", "+5 de Dano"],
-    ["img/item20.jpg", "Baú", "Armazena itens"],
-    ["img/item21.jpg", "Picareta de pedra", "+5 de Dano"],
-    ["img/item22.jpg", "Katana", "+10 de Dano"],
-    ["img/item23.jpg", "Condensador", "Use para fortificar poções."],
-    ["img/item24.jpg", "Poção placebo", "Use para desfazer efeitos de poções ou mobs."],
-    ["img/item25.jpg", "Carne Bovina", "Recupera +40% de fome."],
-    ["img/item26.jpg", "Peixe", "Recupera +20% de fome."],
-    ["img/item28.jpg", "Amuleto", "Enquanto usado, te protege contra qualquer dano."],
-    ["img/item29.jpg", "Armadura de Ferro", "Protege contra +5 de dano."],
-    ["img/item30.jpg", "Flecha", "+5 de Dano."],
-    ["img/item32.jpg", "Adubária", "Aduba terra em 20 blocos quando usada."]
-];
-
-
 $total_slots = 35;
+$conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
-    session_destroy();
-    header('Location: index.php');
-    exit();
+if ($conn->connect_error) {
+    die("Erro na conexão: " . $conn->connect_error);
 }
+
+$sql = "SELECT * FROM itens LIMIT $total_slots";
+$result = $conn->query($sql);
+$itens = [];
+
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        $itens[] = $row;
+    }
+}
+$conn->close();
 ?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventário - The Legend of Zelda</title>
+    <title>Dashboard - Zelda</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .background {
+              .background {
             background-image: url('https://wallpapercave.com/wp/wp9383694.jpg');
             background-size: cover;
             background-position: center;
@@ -210,27 +185,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
         <div class="inventory-box">
             <?php 
             for ($i = 0; $i < $total_slots; $i++): 
-                if (isset($predefined_items[$i])) {
-                    $item = $predefined_items[$i];
-                    echo "<div class='small-item' onclick=\"showItemInfo('$item[0]', '$item[1]', '$item[2]')\">
-                            <img src='$item[0]' alt='$item[1]' />
+                if (isset($itens[$i])) {
+                    $item = $itens[$i];
+                    echo "<div class='small-item' onclick=\"showItemInfo('{$item['imagem']}', '{$item['nome']}', '{$item['descricao']}')\">
+                            <img src='{$item['imagem']}' alt='{$item['nome']}' />
                           </div>";
                 } else {
-                    echo "<div class='small-item' onclick=\"showItemInfo('Vazio', 'Nenhum item neste slot')\"></div>";
+                    echo "<div class='small-item' onclick=\"showItemInfo('', 'Vazio', 'Nenhum item neste slot')\"></div>";
                 }
             endfor;
             ?>
-
-          
             <div class="buttons-container">
-              
-                <form method="POST" style="display:inline;">
-                    <button type="submit" name="logout" class="logout-btn">Sair</button>
+                <form method="POST" action="logout.php" style="display:inline;">
+                    <button type="submit" class="logout-btn">Sair</button>
                 </form>
-
-             
                 <form method="GET" action="cadastro_item.php" style="display:inline;">
-                    <button type="submit" class="logout-btn-cadastro">Cadastre um item</button>
+                    <button type="submit" class="logout-btn-cadastro">Cadastrar novo item</button>
                 </form>
             </div>
         </div>
