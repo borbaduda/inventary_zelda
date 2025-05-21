@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $imagem = isset($_POST['item_image_url']) ? $_POST['item_image_url'] : '';
 
     if (empty($imagem)) {
-        $erro = true; // Se estiver vazio, exibe erro
+        $erro = true; 
     }
 
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: dashboard.php");
             exit();
         } else {
-            $erro = true; // Se falhar, exibe erro
+            $erro = true; 
         }
 
         $stmt->close();
