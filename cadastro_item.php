@@ -7,15 +7,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = $_POST['item_name'];
     $descricao = $_POST['item_description'];
     
-    // Verifique se a URL da imagem foi preenchida corretamente
     $imagem = isset($_POST['item_image_url']) ? $_POST['item_image_url'] : '';
 
-    // Verifica se o campo de imagem não está vazio
     if (empty($imagem)) {
         $erro = true; // Se estiver vazio, exibe erro
     }
 
-    // Conectando ao banco de dados
     $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
     if ($conn->connect_error) {
@@ -23,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$erro) {
-        // Preparar e executar o insert
+
         $stmt = $conn->prepare("INSERT INTO itens (nome, descricao, imagem) VALUES (?, ?, ?)");
         $stmt->bind_param("sss", $nome, $descricao, $imagem);
 
