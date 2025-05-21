@@ -6,11 +6,4 @@ define('DB_USER', 'root');
 define('DB_PASS', '');        
 define('DB_NAME', 'borba');
 
-$inventory = [
-    "Master Sword",
-    "Hylian Shield",
-    "Boomerang",
-    "Bow and Arrows",
-    "Bombs"
-];
 ?>
